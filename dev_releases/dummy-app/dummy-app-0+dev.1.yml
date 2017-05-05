@@ -1,0 +1,21 @@
+---
+packages:
+- name: dummy-app
+  version: d1c913c14dddf974928cbef2541837c4a0234cd0
+  fingerprint: d1c913c14dddf974928cbef2541837c4a0234cd0
+  sha1: d23db0452c57e70baf300f4a102aabb9d436e257
+  dependencies: []
+- name: nodejs
+  version: 3b3f175c39e5e34830a840157dfbb6cbda9bfe18
+  fingerprint: 3b3f175c39e5e34830a840157dfbb6cbda9bfe18
+  sha1: 19d75ecc3ec066af7f7e3ba778ee26a238d88e87
+  dependencies: []
+jobs:
+- name: dummy-app
+  version: b1f167be59632af45d60cb26e62451e418873c65
+  fingerprint: b1f167be59632af45d60cb26e62451e418873c65
+  sha1: 30c825c80af6f425aadb42d23bb5852b602b78cd
+commit_hash: '00000000'
+uncommitted_changes: true
+name: dummy-app
+version: 0+dev.1

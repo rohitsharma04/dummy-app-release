@@ -1,0 +1,9 @@
+---
+nodejs/node-v6.9.2-darwin-x64.tar.gz:
+  object_id: 837dfec9-2bb1-4c74-ab42-b4038d73e745
+  sha: 6a8edc55c2e6246ad3ee1b80236bcdec94521115
+  size: 12041020
+nodejs/node-v6.9.2-linux-x64.tar.xz:
+  object_id: 9cdab835-8968-4998-a0dd-b33065b03e47
+  sha: 96b6e389d415f95b413dc7ffec7675546b738973
+  size: 9342556

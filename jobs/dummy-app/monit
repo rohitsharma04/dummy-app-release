@@ -1,0 +1,5 @@
+check process dummy-app
+  with pidfile /var/vcap/sys/run/dummy-app/dummy-app.pid
+  start program "/var/vcap/jobs/dummy-app/bin/dummy-app_ctl start"
+  stop program "/var/vcap/jobs/dummy-app/bin/dummy-app_ctl stop"
+  group vcap

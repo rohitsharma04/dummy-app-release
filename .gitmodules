@@ -1,0 +1,3 @@
+[submodule "src/dummy-app"]
+	path = src/dummy-app
+	url = https://github.com/rohitsharma04/dummy-app.git

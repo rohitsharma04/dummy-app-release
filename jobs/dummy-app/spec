@@ -1,0 +1,9 @@
+---
+name: dummy-app
+templates:
+  dummy-app_ctl.erb: bin/dummy-app_ctl
+packages:
+  - nodejs
+  - dummy-app
+
+

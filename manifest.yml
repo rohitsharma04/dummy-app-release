@@ -1,0 +1,179 @@
+compilation:
+  cloud_properties:
+    availability_zone: us-east-1c
+    instance_type: m3.large
+  network: default
+  reuse_compilation_vms: true
+  workers: 6
+director_uuid: b4c5db4d-74fa-4a58-a19b-90fb50467333
+jobs:
+- instances: 1
+  name: grafana
+  networks:
+  - name: default
+    static_ips:
+    - 10.0.67.20
+  persistent_disk: 1024
+  properties:
+    grafana:
+      auth:
+        anonymous:
+          enabled: false
+        proxy:
+          auto_sign_up: true
+          enabled: true
+          header_name: X-Forwarded-User
+          header_property: username
+      snapshots:
+        external_enabled: false
+    oauth2_proxy:
+      auth:
+        pass_basic_auth: false
+        pass_user_headers: true
+      network:
+        enable_insecure: true
+        http_address: 0.0.0.0:4180
+        upstream:
+        - http://127.0.0.1:3000/
+      oauth:
+        client_id: grafana
+        client_secret: grafana-secret
+        email_domains:
+        - '*'
+        provider: cloudfoundry
+        scope: openid
+        urls:
+          login: https://login.cf.autoscaler.aws.sapcloud.io/oauth/authorize
+          redeem: https://login.cf.autoscaler.aws.sapcloud.io/oauth/token
+          redirect: https://monitoring.cf.autoscaler.aws.sapcloud.io
+          validate: https://login.cf.autoscaler.aws.sapcloud.io/userinfo
+      skip_provider_button: true
+  resource_pool: grafana
+  templates:
+  - name: grafana
+    release: grafana
+  - name: route_registrar
+    release: routing
+  - name: oauth2_proxy
+    release: oauth2_proxy
+- instances: 2
+  name: graphite-nozzle
+  networks:
+  - name: default
+  properties:
+    debug-log: false
+    doppler-endpoint: wss://doppler.cf.autoscaler.aws.sapcloud.io:443
+    graphite-endpoint: 10.0.67.1:2003
+    password: graphite-nozzle-secret
+    skip-ssl-validation: true
+    uaa-endpoint: https://uaa.cf.autoscaler.aws.sapcloud.io
+    username: graphite-nozzle
+  resource_pool: graphite-nozzle
+  templates:
+  - name: nozzle
+    release: graphite-nozzle
+name: grafana
+networks:
+- name: default
+  subnets:
+  - cloud_properties:
+      security_groups:
+      - sg-200aa15f
+      - sg-900ba0ef
+      - sg-970ba0e8
+      - sg-c70ba0b8
+      subnet: subnet-2b0ef763
+    dns:
+    - 10.0.0.2
+    gateway: 10.0.64.1
+    range: 10.0.64.0/19
+    reserved:
+    - 10.0.64.0 - 10.0.67.19
+    - 10.0.67.40 - 10.0.95.255
+    static:
+    - 10.0.67.20 - 10.0.67.29
+  type: manual
+properties:
+  grafana:
+    admin_password: admin
+    admin_username: admin
+    datasources:
+    - database_name: metrics
+      database_type: influxdb
+      name: influxdb_green
+      password: grafana-password
+      url: http://10.0.67.2:8086
+      user: grafana_user
+    - database_name: metrics
+      database_type: influxdb
+      name: influxdb_blue
+      password: grafana-password
+      url: http://10.0.67.2:8086
+      user: grafana_user
+    host: monitoring.cf.autoscaler.aws.sapcloud.io
+    listen_port: 3000
+    port: 4180
+  nats:
+    machines:
+    - 10.0.65.3
+    password: nats
+    port: 4222
+    user: nats
+  route_registrar:
+    routes:
+    - name: monitoring-route
+      port: 4180
+      registration_interval: 20s
+      uris:
+      - monitoring.cf.autoscaler.aws.sapcloud.io
+releases:
+- name: grafana
+  sha1: e14100a6ba8bb1c12e24eed1054d016c0945c86c
+  url: https://bosh.io/d/github.com/vito/grafana-boshrelease?v=10
+  version: 10
+- name: routing
+  sha1: 8d5e4020b9448ff4a02809e246cc0cb6231bbc60
+  url: https://bosh.io/d/github.com/cloudfoundry-incubator/cf-routing-release?v=0.142.0
+  version: 0.142.0
+- name: oauth2_proxy
+  sha1: c88c7c3a7684cc7910953dbf4b5003a1ec6f3224
+  url: https://github.infra.hana.ondemand.com/cloudfoundry/oauth2_proxy-boshrelease/releases/download/v9/oauth2_proxy-9.tgz
+  version: 9
+- name: graphite-nozzle
+  sha1: 17cea7da45a4b34aa9864d5dd3946a51b6a6111f
+  url: https://github.infra.hana.ondemand.com/cloudfoundry/graphite-nozzle-boshrelease/releases/download/v13/graphite-nozzle-13.tgz
+  version: 13
+resource_pools:
+- cloud_properties:
+    availability_zone: us-east-1c
+    instance_type: m3.large
+  env:
+    bosh:
+      password: $6$HxZK4cuZ$fDIQ6d.IJ/PXtA.U71APyEQYKRZoxWap2pxt/oDLP5OZdZ0xk7q3fYqvK/w25nZTb8r8hCq5Qqf/i.ibYU37Q.
+  name: grafana
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    sha1: ef8234b4848f10e54e1684d997758f4bce3a99c8
+    url: https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3363.10
+    version: "3363.10"
+- cloud_properties:
+    availability_zone: us-east-1c
+    instance_type: m3.large
+  env:
+    bosh:
+      password: $6$HxZK4cuZ$fDIQ6d.IJ/PXtA.U71APyEQYKRZoxWap2pxt/oDLP5OZdZ0xk7q3fYqvK/w25nZTb8r8hCq5Qqf/i.ibYU37Q.
+  name: graphite-nozzle
+  network: default
+  stemcell:
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    sha1: ef8234b4848f10e54e1684d997758f4bce3a99c8
+    url: https://bosh.io/d/stemcells/bosh-aws-xen-hvm-ubuntu-trusty-go_agent?v=3363.10
+    version: "3363.10"
+update:
+  canaries: 1
+  canary_watch_time: 1000-30000
+  max_in_flight: 10
+  serial: true
+  update_watch_time: 5000-60000
+
